@@ -34,6 +34,7 @@ library(RColorBrewer)
 
 #Get tweets text
 tweets.text <- tweets.df3[,1]
+tweets.text<- unique(tweets.text)
 
 # Create Corpus
 tweet.corpus<- Corpus(VectorSource(tweets.text))
@@ -56,10 +57,9 @@ tweet.corpus<- tm_map(tweet.corpus, content_transformer(tolower))
 inspect(tweet.corpus[1:5])
 
 #remove stopwords
-tweet.corpus<- tm_map(tweet.corpus, removeWords, c(stopwords("english"), "zomato", "rt"))
+tweet.corpus<- tm_map(tweet.corpus, removeWords, c(stopwords("english"), "zomato", "rt", "..."))
 tweet.corpus<- tm_map(tweet.corpus, removeNumbers)
 tweet.corpus<- tm_map(tweet.corpus, stripWhitespace)
-
 
 #Create TDM
 ap.tdm<- TermDocumentMatrix(tweet.corpus)
@@ -70,7 +70,7 @@ ap.d<- data.frame(word=names(ap.v), freq=ap.v)
 #Create image
 pal2<- brewer.pal(8, "Dark2")
 png("Zomato.png", width=1920, height = 1080)
-wordcloud(ap.d$word, ap.d$freq, scale=c(8,.2), min.freq=25, max.words=Inf, random.order=FALSE, rot.per=.15, colors=pal2)
+wordcloud(ap.d$word, ap.d$freq, scale=c(8,.2), min.freq=15, max.words=Inf, random.order=FALSE, rot.per=.15, colors=pal2)
 
 dev.off()
 
