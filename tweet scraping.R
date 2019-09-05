@@ -45,6 +45,7 @@ tweet.removeAtUser<- function(x) gsub("@[a-z,A-Z]*","",x)
 tweet.removeEmoji<- function(x) gsub("\\p{So}|\\p{Cn}","",x, perl=TRUE)
 tweet.removeSpecialChar<- function(x) gsub("[[:punct:]]","",x)
 tweet.removeN <- function(x) gsub('\\n', '', x)
+tweet.removeDot <- function(x) gsub('…', '', x, fixed=TRUE)
 
 tweet.corpus<- tm_map(tweet.corpus, content_transformer(tweet.removeURL))
 tweet.corpus<- tm_map(tweet.corpus, content_transformer(tweet.removeAtUser))
@@ -53,11 +54,12 @@ tweet.corpus<- tm_map(tweet.corpus, content_transformer(tweet.removeSpecialChar)
 tweet.corpus<- tm_map(tweet.corpus, content_transformer(tweet.removeN))
 tweet.corpus<- tm_map(tweet.corpus, removePunctuation, preserve_intra_word_dashes=TRUE)
 tweet.corpus<- tm_map(tweet.corpus, content_transformer(tolower))
+tweet.corpus<- tm_map(tweet.corpus, content_transformer(tweet.removeDot))
 
 inspect(tweet.corpus[1:5])
 
 #remove stopwords
-tweet.corpus<- tm_map(tweet.corpus, removeWords, c(stopwords("english"), "zomato", "rt", "..."))
+tweet.corpus<- tm_map(tweet.corpus, removeWords, c(stopwords("english"), "zomato", "rt"))
 tweet.corpus<- tm_map(tweet.corpus, removeNumbers)
 tweet.corpus<- tm_map(tweet.corpus, stripWhitespace)
 
@@ -70,7 +72,7 @@ ap.d<- data.frame(word=names(ap.v), freq=ap.v)
 #Create image
 pal2<- brewer.pal(8, "Dark2")
 png("Zomato.png", width=1920, height = 1080)
-wordcloud(ap.d$word, ap.d$freq, scale=c(8,.2), min.freq=15, max.words=Inf, random.order=FALSE, rot.per=.15, colors=pal2)
+wordcloud(ap.d$word, ap.d$freq, scale=c(8,.2), min.freq=5, max.words=Inf, random.order=FALSE, rot.per=.15, colors=pal2)
 
 dev.off()
 
